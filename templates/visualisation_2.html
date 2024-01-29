@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <a href="{{ url_for('home') }}">Return to Home</a>
+    <title>High School Students Performance Dashboard</title>
+    <style type="text/css">
+        .chartBox {
+            width: 250px;
+        }
+    </style>
+  </head>
+  <body onload="initLoad()">                            <!-- on page load, get drop down list value and text -->
+
+    <br/><br/>
+    <div id="container">
+        <h2>Analysis based on higher ed goal</h2>
+   
+         <label for="gradeDropdown">Select Grade:</label>
+         <select id="gradeDropdown" >
+            <option value="">-- Select --</option>        <!-- more options added on page load -->
+         </select>
+         <br/><br/>
+         <div>
+            <table>
+              <tr>
+                <td> Total Students in data set:</td>    
+                <td><p id= "totalStudent"></p></td>
+              </tr>
+              <tr>
+                <td> No of Students who achieved selected final grade:</td>
+                <td><p id= "studentNo"></p></td>
+              </tr>
+              <tr>
+                <td> No of girls who achieved selected final grade:</td>
+                <td><p id= "girls"></p></td>
+              </tr>
+              <tr>
+                <td> No of girls with higher ed goal:</td>
+                <td><p id= "girlsYes"></p></td>
+              </tr>
+              <tr>
+                <td> No of boys who achieved selected final grade:</td>
+                <td><p id= "boys"></p></td>
+              </tr>
+              <tr>
+                <td> No of boys with higher ed goal:</td>
+                <td><p id= "boysYes"></p></td>
+              </tr>
+            </table>
+
+         </div>
+
+         <br/><br/>
+
+         <div class="chartBox">
+            <canvas id="myChart" ></canvas>
+        </div>
+     </div>
+
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+ 
+        // async fetch data block to get data from flask app url
+        async function getJsonData() {
+          const url = "{{ url_for('ReturnJSON') }}"
+          const response = await fetch(url);
+          const jsonData = await response.json();
+          console.log(jsonData);
+          return jsonData;
+        };
+        var promiseData = getJsonData();
+        console.log(promiseData);
+        
+        var data1
+        // called from html body onload
+        function initLoad() {
+          getJsonData().then(jsonData => {
+            console.log(jsonData);
+
+            // iterate through json object to load drop down options
+            jsonData.forEach((element, i) => {
+              // console.log(jsonData[i].finalGrade);
+              // console.log(jsonData[i].higher_ed_YesPct + "," + jsonData[i].higher_ed_NoPct);
+
+              var option = document.createElement("option");
+              option.text = jsonData[i].finalGrade;
+              option.value = jsonData[i].higher_ed_YesPct + "," + jsonData[i].higher_ed_NoPct;         
+              gradeDropdown.add(option);    
+            });
+
+            data1 = jsonData;
+          });
+        };
+        
+        // Add event listener to drop down
+        gradeDropdown.addEventListener('change', goalTracker);
+
+        //chart setup block
+        const data = {
+            labels: ['Yes', 'No'],
+            datasets: [{
+            label: 'Higher Ed Goal',
+            data: [0, 0],
+            borderWidth: 1
+            }]
+        };
+
+        //chart config block
+        const config = {
+          type: 'pie',  
+          data,
+          options: {}
+          };
+
+        //chart render block
+        const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+          );
+
+        // update chart when option is changed in drop down
+        function goalTracker(){
+            
+            const gradeDropdown = document.getElementById('gradeDropdown');
+            const selectedGrade = gradeDropdown.options[gradeDropdown.selectedIndex].text;
+            // console.log(selectedGrade);
+                       
+            const selectedData = data1.find(d => d.finalGrade === selectedGrade);
+            // console.log(selectedData);
+
+            // update text information
+            document.getElementById('totalStudent').innerText= selectedData.totalStudent;
+            document.getElementById('studentNo').innerText= selectedData.studentNo;
+            document.getElementById('girls').innerText= selectedData.females;
+            document.getElementById('girlsYes').innerText= selectedData.higher_ed_Yes_girls;
+            document.getElementById('boys').innerText= selectedData.males;
+            document.getElementById('boysYes').innerText= selectedData.higher_ed_Yes_boys;
+
+            myChart.data.datasets[0].data = gradeDropdown.value.split(',');
+            myChart.update();
+        }
+          
+    </script>
+
+    
+  </body> 
+  
