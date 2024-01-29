@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Map with Isochrone API</title>
+  <a href="{{ url_for('home') }}">Return to Home</a>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Mapbox GL JS -->
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js"></script>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css" rel="stylesheet" />
+  <!-- Mapbox Assembly -->
+  <link href="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.min.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-assembly/v1.3.0/assembly.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Righteous';
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      background-color: peachpuff;
+    }
+
+    #title {
+      font-size: 40px;
+      color: #333; /* You can change the color code as per your preference */
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    #map {
+      width: 90%;
+      height: 75vh;
+    }
+
+    #text-container {
+      position: absolute;
+      top: 50%;
+      bottom: 0;
+      width: 100%;
+      padding: 20px;
+      background-color: peachpuff;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="title">The Schools we are analysing and the distance students travel</div>
+  <div id="map"></div>
+
+  <div id="text-container">
+    <h1>Map with Isochrone API</h1>
+    <p>Choose a travel mode and duration to see the students how far students travel.</p>
+
+    <form id="params">
+      <h4 class="txt-m txt-bold mb6">Choose a travel mode:</h4>
+      <div class="mb12 mr12 toggle-group align-center">
+        <label class="toggle-container">
+          <input name="profile" type="radio" value="walking" />
+          <div class="toggle toggle--active-null toggle--null">Walking</div>
+        </label>
+        <label class="toggle-container">
+          <input name="profile" type="radio" value="cycling" checked />
+          <div class="toggle toggle--active-null toggle--null">Cycling</div>
+        </label>
+        <label class="toggle-container">
+          <input name="profile" type="radio" value="driving" />
+          <div class="toggle toggle--active-null toggle--null">Driving</div>
+        </label>
+      </div>
+      <h4 class="txt-m txt-bold mb6">Choose a maximum duration:</h4>
+      <div class="mb12 mr12 toggle-group align-center">
+        <label class="toggle-container">
+          <input name="duration" type="radio" value="10" checked />
+          <div class="toggle toggle--active-null toggle--null">10 min</div>
+        </label>
+        <label class="toggle-container">
+          <input name="duration" type="radio" value="20" />
+          <div class="toggle toggle--active-null toggle--null">20 min</div>
+        </label>
+        <label class="toggle-container">
+          <input name="duration" type="radio" value="30" />
+          <div class="toggle toggle--active-null toggle--null">30 min</div>
+        </label>
+      </div>
+    </form>
+
+    <p>This map shows the two schools which we have observed and the distances their students travel within the time frame found to attend their classes.</p>
+    <p>Students declared they travel between 15 minutes to an hour to attend their respective schools, so this visualization displays where these students could be traveling from depending on their mode of transportation. Using a Isochrome API it has generated the distances in accordance to local roads and conditions, with visualisations of the distance they may travel and possible routes they take. </p>
+  </div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYWxleGhvZGdpbnM5NiIsImEiOiJjbHJ5c2R0NmExc25jMnFuYXlpODhsMXdtIn0.gQWrjSVxH9XJ2Y7NunCtww';
+  
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-7.902, 38.575],
+      zoom: 7.8
+    });
+  
+    const params = document.getElementById('params');
+    const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
+    let profile = 'cycling';
+    let minutes = 10;
+  
+    const marker1 = new mapboxgl.Marker({ 'color': '#314ccd' }).setLngLat({ lon: -7.432, lat: 39.303 }).addTo(map);
+    const marker2 = new mapboxgl.Marker({ 'color': '#ff0000' }).setLngLat({ lon: -7.91, lat: 38.58 }).addTo(map);
+  
+    // Create popups for markers
+    const popup1 = new mapboxgl.Popup().setText('Escola Secundária Gabriel Pereira - 183 Female and 166 Male students academic performances were analysed in dataset');
+    const popup2 = new mapboxgl.Popup().setText('Mouzinho da Silveira High School - 25 Female and 21 Male students academic performances were analysed in dataset');
+  
+    marker1.setPopup(popup1);
+    marker2.setPopup(popup2);
+  
+    function getIso(marker) {
+      const lngLat = marker.getLngLat();
+      fetch(
+        `${urlBase}${profile}/${lngLat.lng},${lngLat.lat}?contours_minutes=${minutes}&polygons=true&access_token=${mapboxgl.accessToken}`,
+        { method: 'GET' }
+      )
+        .then(response => response.json())
+        .then(data => {
+          map.getSource('iso').setData(data);
+          // Show the popup when the marker is clicked
+          marker.getPopup().addTo(map);
+        });
+    }
+  
+    params.addEventListener('change', (event) => {
+      if (event.target.name === 'profile') {
+        profile = event.target.value;
+      } else if (event.target.name === 'duration') {
+        minutes = event.target.value;
+      }
+    });
+  
+    map.on('load', () => {
+      map.addSource('iso', {
+        type: 'geojson',
+        data: { 'type': 'FeatureCollection', 'features': [] }
+      });
+  
+      map.addLayer(
+        {
+          'id': 'isoLayer',
+          'type': 'fill',
+          'source': 'iso',
+          'layout': {},
+          'paint': {
+            'fill-color': '#5a3fc0',
+            'fill-opacity': 0.3
+          }
+        },
+        'poi-label'
+      );
+  
+      // Make the initial Isochrone API requests for both markers
+      getIso(marker1);
+      getIso(marker2);
+    });
+  
+    // Trigger Isochrone API when a marker is clicked
+    marker1.getElement().addEventListener('click', () => getIso(marker1));
+    marker2.getElement().addEventListener('click', () => getIso(marker2));
+  </script>
+</body>
+
+</html>
+

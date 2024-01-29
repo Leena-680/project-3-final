@@ -19,7 +19,7 @@ def home():
 
 @app.route("/map_2")
 def map_2():
-    return render_template("map_2.html")
+    return render_template("iso_map.html")
 
 @app.route("/visualisation_1")
 def visualisation_1():
