@@ -93,6 +93,7 @@ When we compare A graders to D graders, average travel time goes up from 11.8 mi
 We can conclude that travel time does not have a strong correlation with final grade. But social and free time habits may have more impact on final grade.
 
 This visualisation has been created using Plotly. 
+
 ![visual two](https://github.com/Leena-680/project-3-final/assets/145959658/536de6e9-9c36-4614-ba80-8d5bad4a12ef)
 
 
@@ -105,6 +106,7 @@ Are students motivated to get good grades if they have a higher education goal?
 From the visualisation, we can see that all the students who achieved A grades have higher education goals. When we select a D grade, 86.9% students have higher education goals. 86.9% is still a very high number. So we can conclude that just having a goal does not result in the highest final grade. Even though most of the students have higher education goal, they do not have good study strategies to get higher final grades.
 
 Here I have used Chart.js to generate pie chart.
+
 ![visual three](https://github.com/Leena-680/project-3-final/assets/145959658/b545ccf6-3b7c-4d0c-a640-c3f940a4a890)
 
 
