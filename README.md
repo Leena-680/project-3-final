@@ -43,11 +43,15 @@ The framework used is Flask. The Flask App features an interactive web interface
 Calculates different measures used in Visualisation 1 and 2.
 
 Provides RESTful end points for data retrieval.
+
+When you run the app.py file it creates a JSON file with the required output for data visualisations. 
 ![image](https://github.com/Leena-680/project-3-final/assets/144679119/ca40dca0-2e4d-42dc-99a3-2dacf36a6b45)
 
 ## Frontend Implementation ## 
 
 HTML and Javascript are utilized to fetch and manipulate data from the flask backend.
+
+The app.js file fetches the data from the Flask App and portrays it in the front end. (visualisation_1.html - Mathematics Performance Dashboard)
 
 The visualisations are created using MapBox, Plotly and Chart.js.
 
