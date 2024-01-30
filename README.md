@@ -26,6 +26,8 @@ The initial data is in CSV format. (student_math_clean.csv)
 Using Pandas, this data is loaded on to a DataFrame. (students_data.py)
 
 To create a meaningful analysis, certain parameters in the data required to be mapped. The code below shows the mapping criteria used –
+![image](https://github.com/Leena-680/project-3-final/assets/144679119/5ff16e02-1056-431b-b094-a9e8e8bec877)
+
 ·         map_final_grade: Converts numeric grades to letter grades (A, B, C, D)
 ·         map_study_time: Maps study time to average hours
 ·         map_travel_time: Maps travel time to average minutes
