@@ -2,6 +2,9 @@
 
 By  Alexander Hodgins, Gayan DSilva, Leena Chauhan, Himali Wijeratne
 
+## Link to presentation ## 
+
+https://docs.google.com/presentation/d/1q5RqmvoCfvH1nc0b4Y7mZE7_xtfL-h_JvRtW5tdHHCw/edit?usp=sharing 
 
 ## Introduction ##
 
