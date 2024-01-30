@@ -37,7 +37,7 @@ def about():
 def get_data():
     df = get_dataframe()
 
-    # Calculate statistics for each grade
+    # Calculatations for each grade
     grade_categories = ['A', 'B', 'C', 'D']
     total_students = len(df)
     result = []
